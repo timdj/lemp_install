@@ -3,6 +3,7 @@ PHP_MEMORY_LIMIT=256M
 PHP_POST_MAX_SIZE=128M
 PHP_UPLOAD_MAX_FILESIZE=128M
 NR_CPUS=$(grep -c ^processor /proc/cpuinfo) 
+IP=`ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -35,8 +36,8 @@ chmod +x /etc/network/if-pre-up.d/iptables
 ##############  NGINX
 wget http://nginx.org/keys/nginx_signing.key
 apt-key add nginx_signing.key
-echo 'deb http://nginx.org/packages/debian/ jessie nginx' >> /etc/apt/sources.list
-echo 'deb-src http://nginx.org/packages/debian/ jessie nginx' >> /etc/apt/sources.list
+echo 'deb http://nginx.org/packages/mainline/debian/ jessie nginx' >> /etc/apt/sources.list
+echo 'deb-src http://nginx.org/packages/mainline/debian/ jessie nginx' >> /etc/apt/sources.list
 
 apt-get -y update && apt-get upgrade
 apt-get -y install nginx mariadb-server mariadb-client php5-fpm php5-mysqlnd php5-curl php5-gd php-pear php5-imagick php5-mcrypt php5-memcache php5-xmlrpc php5-intl curl git unzip sudo pwgen
@@ -51,14 +52,18 @@ chown www-data:www-data /var/www/html
 rm -f /etc/nginx/conf.d/default.conf
 rm -f /etc/nginx/conf.d/example_ssl.conf
 
-wget -O /etc/nginx/conf.d/drupal_http.conf http://www.timdj.nl/lemp_install/drupal_http.conf
+# to generate your dhparam.pem file, run in the terminal
+openssl dhparam -out /etc/nginx/dhparam.pem 2048
 
+# Put standard drupal config in place. Can be replaced with any config
+wget -O /etc/nginx/conf.d/redirect_to_https.conf https://raw.githubusercontent.com/timdj/lemp_install/master/redirect_to_https.conf
+wget -O /etc/nginx/default_nginx_site.example https://raw.githubusercontent.com/timdj/lemp_install/master/default_nginx_site.example
+wget -O /etc/nginx/conf.d/nginx_php.conf https://raw.githubusercontent.com/timdj/lemp_install/master/nginx_php.conf
 
 ############## MariaDB
 MYSQL_PASSWORD=$(pwgen -s 12 1)
 
-mysqladmin -u root password "MYSQL_PASSWORD"
-echo -e "$PASSWORD\nn\n\n\n\n\n " | mysql_secure_installation 2>/dev/null
+echo -e "\n\Y\n$MYSQL_PASSWORD\n$MYSQL_PASSWORD\n\n\n\n\n" | mysql_secure_installation 2>/dev/null
 
 # Create site database
 MYSQLWEB_USER=site
@@ -97,20 +102,26 @@ source ~/.bashrc
 apt-get -y install unattended-upgrades apt-listchanges
 echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
 
+############# letsencrypt
+git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+cd /opt/letsencrypt
+./letsencrypt-auto
 
+mkdir /var/www/letsencrypt
 
 # restart services
 service unattended-upgrades restart
 service php5-fpm restart
 service nginx restart
 
+wget -O /root/addsite.sh https://raw.githubusercontent.com/timdj/lemp_install/master/addsite.sh
+chmod +x /root/addsite.sh
 
-#// TODO
-#// config optimalisatie mysql
-#// ssl spdy config nginx http 2.0? 
-#// letsencrypt integratie
-#// geen root login
-
+echo
+echo
+echo
+echo
+echo
 echo
 echo "==========================================================="
 echo "root mysql password: $MYSQL_PASSWORD"
@@ -119,5 +130,16 @@ echo "MYSQL USER:     $MYSQLWEB_USER"
 echo "MYSQL DB:       $MYSQLWEB_DB"
 echo "MYSQL PASSWORD: $MYSQLWEB_PASSWORD"
 echo "==========================================================="
-print "Ip is: "
-/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
+echo "Ip is: $IP"
+echo 
+echo "Add new site using:"
+echo "/root/addsite.sh www.example.tld"
+echo 
+echo "make sure dns is already resolving"
+echo 
+
+
+#// TODO
+#// config optimalisatie mysql
+#// geen root login
+

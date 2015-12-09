@@ -58,7 +58,7 @@ openssl dhparam -out /etc/nginx/dhparam.pem 2048
 # Put standard drupal config in place. Can be replaced with any config
 wget -O /etc/nginx/conf.d/redirect_to_https.conf https://raw.githubusercontent.com/timdj/lemp_install/master/redirect_to_https.conf
 wget -O /etc/nginx/default_nginx_site.example https://raw.githubusercontent.com/timdj/lemp_install/master/default_nginx_site.example
-wget -O /etc/nginx/conf.d/nginx_php.conf https://raw.githubusercontent.com/timdj/lemp_install/master/nginx_php.conf
+wget -O /etc/nginx/conf.d/nginx_extra.conf https://raw.githubusercontent.com/timdj/lemp_install/master/nginx_extra.conf
 
 ############## MariaDB
 MYSQL_PASSWORD=$(pwgen -s 12 1)
@@ -98,16 +98,16 @@ composer global require drush/drush:dev-master
 echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
-##############  unattended upgrades
-apt-get -y install unattended-upgrades apt-listchanges
-echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
-
 ############# letsencrypt
 git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
 cd /opt/letsencrypt
 ./letsencrypt-auto
 
 mkdir /var/www/letsencrypt
+
+##############  unattended upgrades
+apt-get -y install unattended-upgrades apt-listchanges
+echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
 
 # restart services
 service unattended-upgrades restart
@@ -118,9 +118,9 @@ wget -O /root/addsite.sh https://raw.githubusercontent.com/timdj/lemp_install/ma
 chmod +x /root/addsite.sh
 
 echo
-echo
-echo
-echo
+echo "optional extra steps"
+echo "add noatime /etc/fstab"
+echo "add ppdev,parport_pc,joydev,pcspkr,psmouse,cdrom to /etc/modprobe.d/blacklist.conf"
 echo
 echo
 echo "==========================================================="

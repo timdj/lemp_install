@@ -89,15 +89,5 @@ server {
 		fastcgi_read_timeout 60s;
 		fastcgi_intercept_errors on;
 	}
-
-	
-	
-	# set long EXPIRES header on static assets
-	# NOTE: this causes thumbnails to break with Drupal, see: https://www.drupal.org/node/1109312
-	#location ~* \.(?:jpg|jpeg|gif|bmp|ico|png|css|js|swf)$ {
-	#	expires 30d;
-	#	access_log off;
-	#}
-	
 }
 

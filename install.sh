@@ -94,7 +94,7 @@ EOL
 
 ############## drush
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-composer global require drush/drush:dev-master
+/usr/local/bin/composer global require drush/drush:dev-master
 echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 

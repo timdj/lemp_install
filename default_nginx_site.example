@@ -47,6 +47,21 @@ server {
 		access_log off;
 	}
 
+	# Avoid image hotlinking from other sites and allow browsers to cache
+	location ~* \.(js|css|jpg|jpeg|gif|png|svg|ico)$ {
+        #        valid_referers www.example.com blocked none ;
+        #        if ($invalid_referer) {
+        #                return 403;
+        #                break;
+        #        }
+                if (-f $request_filename) {
+                        expires      30d;
+                        add_header Cache-Control public;
+                        break;
+                }
+        }
+
+
 	location / {
 		# Drupal
 		try_files $uri $uri/ /index.php?q=$uri&$args;
@@ -55,7 +70,7 @@ server {
 		# try_files $uri $uri/ /index.php?$args;
 	}
 	
-	location ~* \.(htaccess|htpasswd) {
+	 location ~ /\. {
 		deny all;
 	}
 	
@@ -75,6 +90,8 @@ server {
 		fastcgi_intercept_errors on;
 	}
 
+	
+	
 	# set long EXPIRES header on static assets
 	# NOTE: this causes thumbnails to break with Drupal, see: https://www.drupal.org/node/1109312
 	#location ~* \.(?:jpg|jpeg|gif|bmp|ico|png|css|js|swf)$ {

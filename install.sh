@@ -78,6 +78,7 @@ sed -i 's/memory_limit = .*/memory_limit = '${PHP_MEMORY_LIMIT}'/' /etc/php5/cli
 sed -i 's/memory_limit = .*/memory_limit = '${PHP_MEMORY_LIMIT}'/' /etc/php5/fpm/php.ini
 sed -i 's/post_max_size = .*/post_max_size = '${PHP_POST_MAX_SIZE}'/' /etc/php5/fpm/php.ini
 sed -i 's/upload_max_filesize = .*/upload_max_filesize = '${PHP_UPLOAD_MAX_FILESIZE}'/' /etc/php5/fpm/php.ini
+sed -i 's/;realpath_cache_size = .*/realpath_cache_size = '256k'/' /etc/php5/fpm/php.ini
 
 echo "realpath_cache_size = 256k" >> /etc/php5/cli/php.ini
 
@@ -94,6 +95,7 @@ EOL
 
 ############## drush
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+export PATH="$HOME/.composer/vendor/bin:$PATH"
 /usr/local/bin/composer global require drush/drush:dev-master
 echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc

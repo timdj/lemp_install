@@ -48,7 +48,7 @@ server {
 	}
 
 	# Avoid image hotlinking from other sites and allow browsers to cache
-	location ~* \.(js|css|jpg|jpeg|gif|png|svg|ico|woff|ttf|eot)$ {
+	location ~* \.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|doc|xls|exe|pdf|ppt|txt|tar|mid|midi|wav|bmp|rtf|js|flv|swf|html|htm|woff|ttf|eot|svg|svgz)$ {
         #        valid_referers www.example.com blocked none ;
         #        if ($invalid_referer) {
         #                return 403;

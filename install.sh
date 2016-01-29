@@ -40,7 +40,7 @@ echo 'deb http://nginx.org/packages/mainline/debian/ jessie nginx' >> /etc/apt/s
 echo 'deb-src http://nginx.org/packages/mainline/debian/ jessie nginx' >> /etc/apt/sources.list
 
 apt-get -y update && apt-get upgrade
-apt-get -y install nginx mariadb-server mariadb-client php5-fpm php5-mysqlnd php5-curl php5-gd php-pear php5-imagick php5-mcrypt php5-memcache php5-xmlrpc php5-intl curl git unzip sudo pwgen
+apt-get -y install nginx mariadb-server mariadb-client php5-fpm php5-mysqlnd php5-curl php5-gd php-pear php5-imagick php5-mcrypt php5-memcache php5-xmlrpc php5-intl curl git unzip sudo pwgen apache2-utils rsync
 
 sed -i 's/worker_processes .*/worker_processes '${NR_CPUS}';/' /etc/nginx/nginx.conf
 sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf
